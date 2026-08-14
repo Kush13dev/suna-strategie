@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUNA — Registre stratégique du village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;900&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sable-pale:   #F1E2B8;
+    --sable-carte:  #E8D19E;
+    --dune:         #D3A24C;
+    --terre-cuite:  #B84E28;
+    --terre-cuite-2:#8F3A1E;
+    --nuit:         #23180F;
+    --nuit-2:       #34261A;
+    --crepuscule:   #3A4258;
+    --marais:       #5C7A4E;
+    --cerisier:     #D98CA3;
+    --encre:        #2A1B10;
+    --texte-clair:  #F6E9C9;
+    --ok:           #5A7D4A;
+    --alerte:       #A63A2C;
+    --radius: 4px;
+    --font-display: "Big Shoulders Display", sans-serif;
+    --font-body: "Karla", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--sable-pale);
+    color:var(--encre);
+    font-family:var(--font-body);
+    line-height:1.55;
+  }
+
+  ::selection{ background:var(--terre-cuite); color:var(--texte-clair); }
+
+  a{ color:inherit; }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0;
+    color:var(--nuit);
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--terre-cuite-2);
+    margin:0 0 0.6rem 0;
+  }
+
+  .kanji-mark{
+    font-family: serif;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:rgba(35,24,15,0.94);
+    backdrop-filter: blur(6px);
+    border-bottom:3px solid var(--terre-cuite);
+  }
+  .nav-inner{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0.75rem 1.5rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+  }
+  .nav-brand{
+    display:flex;
+    align-items:baseline;
+    gap:0.5rem;
+    color:var(--texte-clair);
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    font-weight:900;
+    letter-spacing:0.06em;
+  }
+  .nav-brand .kanji-mark{
+    color:var(--dune);
+    font-size:1.3rem;
+  }
+  nav.links{
+    display:flex;
+    gap:0.25rem;
+    flex-wrap:wrap;
+  }
+  nav.links a{
+    text-decoration:none;
+    color:var(--texte-clair);
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:0.5rem 0.75rem;
+    border-radius:var(--radius);
+    border:1px solid transparent;
+    opacity:0.75;
+  }
+  nav.links a:hover, nav.links a:focus-visible{
+    opacity:1;
+    border-color:var(--dune);
+  }
+  nav.links a.active{
+    opacity:1;
+    background:var(--terre-cuite);
+    color:var(--nuit);
+    font-weight:600;
+  }
+  nav.links a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--dune);
+    outline-offset:2px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(211,162,76,0.35), transparent 55%),
+      linear-gradient(180deg, var(--nuit) 0%, var(--nuit-2) 65%, var(--sable-pale) 100%);
+    padding:5rem 1.5rem 8rem 1.5rem;
+    color:var(--texte-clair);
+  }
+  .hero-kanji{
+    position:absolute;
+    right:-3vw;
+    top:-6vw;
+    font-family:serif;
+    font-size:min(48vw, 480px);
+    color:rgba(216,166,79,0.08);
+    line-height:1;
+    user-select:none;
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .hero h1{
+    color:var(--texte-clair);
+    font-size:clamp(2.6rem, 6vw, 5rem);
+    line-height:0.98;
+    max-width:14ch;
+  }
+  .hero h1 span{ color:var(--dune); }
+  .hero p.lede{
+    max-width:52ch;
+    margin-top:1.25rem;
+    font-size:1.05rem;
+    color:#E4D3A6;
+  }
+  .hero-cta{
+    margin-top:2rem;
+    display:flex;
+    gap:0.75rem;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:0.7rem 1.2rem;
+    border-radius:var(--radius);
+    border:1px solid var(--dune);
+    cursor:pointer;
+    transition: transform 0.12s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-fill{ background:var(--terre-cuite); color:var(--nuit); border-color:var(--terre-cuite); font-weight:700; }
+  .btn-outline{ background:transparent; color:var(--texte-clair); }
+
+  .hero-stats{
+    margin-top:3rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:1px;
+    background:rgba(216,166,79,0.25);
+    max-width:640px;
+    border:1px solid rgba(216,166,79,0.25);
+  }
+  .hero-stats div{
+    background:var(--nuit);
+    padding:1rem 1.1rem;
+  }
+  .hero-stats .num{
+    font-family:var(--font-display);
+    font-size:2rem;
+    color:var(--dune);
+    font-weight:700;
+  }
+  .hero-stats .label{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:#C8B482;
+  }
+
+  .dune-divider{ display:block; margin-top:-1px; width:100%; height:auto; }
+
+  /* ---------- CARTE DU MONDE ---------- */
+  .carte-wrap{
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,0.12);
+    box-shadow:0 8px 24px rgba(35,24,15,0.18);
+  }
+  .carte-wrap img{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .carte-legende{
+    display:flex;
+    gap:1.5rem;
+    flex-wrap:wrap;
+    margin-top:1.25rem;
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--terre-cuite-2);
+  }
+  .legende-item{ display:flex; align-items:center; gap:0.4rem; }
+  .legende-ico{ color:var(--terre-cuite); font-size:0.9rem; }
+
+  /* ---------- SECTIONS ---------- */
+  section.panel{
+    padding:4.5rem 1.5rem;
+    scroll-margin-top:5rem;
+  }
+  .panel-inner{
+    max-width:1180px;
+    margin:0 auto;
+  }
+  section.panel.dark{
+    background:var(--nuit);
+    color:var(--texte-clair);
+  }
+  section.panel.dark h2{ color:var(--texte-clair); }
+  section.panel.dark .eyebrow{ color:var(--dune); }
+
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:1rem;
+    flex-wrap:wrap;
+    margin-bottom:2rem;
+    border-bottom:2px solid var(--terre-cuite);
+    padding-bottom:1.25rem;
+  }
+  .section-head h2{ font-size:clamp(1.8rem,4vw,2.6rem); }
+  .section-head p{ max-width:46ch; margin:0.4rem 0 0 0; opacity:0.85; }
+
+  /* ---------- CARDS shared ---------- */
+  .card{
+    background:var(--sable-carte);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:var(--radius);
+    padding:1.5rem;
+  }
+  .dark .card{
+    background:var(--nuit-2);
+    border-color:rgba(216,166,79,0.18);
+  }
+
+  /* ---------- REGISTRE ---------- */
+  .registre-grid{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:2rem;
+    align-items:start;
+  }
+  @media (max-width:900px){ .registre-grid{ grid-template-columns:1fr; } }
+
+  table.registre{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+  }
+  table.registre thead th{
+    text-align:left;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    font-size:0.68rem;
+    color:var(--terre-cuite-2);
+    border-bottom:2px solid var(--terre-cuite);
+    padding:0.5rem 0.6rem;
+  }
+  table.registre tbody td{
+    padding:0.65rem 0.6rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+    vertical-align:middle;
+  }
+  table.registre tbody tr:hover{ background:rgba(184,78,40,0.08); }
+  .badge{
+    display:inline-block;
+    padding:0.15rem 0.5rem;
+    border-radius:99px;
+    font-size:0.68rem;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    border:1px solid currentColor;
+  }
+  .badge.genin{ color:#4C6B3C; }
+  .badge.genin_confirme{ color:#5A7D4A; }
+  .badge.chunin{ color:#8F6A1F; }
+  .badge.chunin_confirme{ color:var(--dune); }
+  .badge.tokubetsu_jonin{ color:var(--nuit); background:var(--nuit); color:var(--texte-clair); border-color:var(--nuit); }
+  .statut{ font-size:0.78rem; }
+  .statut.actif::before{ content:"● "; color:var(--ok); }
+  .statut.mission::before{ content:"● "; color:var(--dune); }
+  .statut.repos::before{ content:"● "; color:#9A8763; }
+
+  .row-del{
+    background:none;
+    border:1px solid var(--terre-cuite-2);
+    color:var(--terre-cuite-2);
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    padding:0.25rem 0.5rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .row-del:hover{ background:var(--terre-cuite-2); color:var(--texte-clair); }
+
+  form.enregistrer{
+    display:flex;
+    flex-direction:column;
+    gap:0.85rem;
+  }
+  form.enregistrer label{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--terre-cuite-2);
+    display:block;
+    margin-bottom:0.3rem;
+  }
+  form.enregistrer input, form.enregistrer select{
+    width:100%;
+    padding:0.55rem 0.6rem;
+    border:1px solid #b89a5c;
+    border-radius:var(--radius);
+    background:#fbf3dd;
+    font-family:var(--font-body);
+    font-size:0.9rem;
+  }
+  form.enregistrer button{
+    margin-top:0.3rem;
+    background:var(--terre-cuite);
+    color:var(--nuit);
+    border:none;
+    font-weight:700;
+    font-family:var(--font-mono);
+    text-transform:uppercase;
+    font-size:0.78rem;
+    letter-spacing:0.05em;
+    padding:0.7rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  form.enregistrer button:hover{ background:var(--terre-cuite-2); }
+
+  .stat-mini-row{
+    display:flex;
+    gap:0.6rem;
+    margin-bottom:1.25rem;
+    flex-wrap:wrap;
+  }
+  .stat-mini{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    background:rgba(184,78,40,0.1);
+    border:1px solid rgba(184,78,40,0.3);
+    padding:0.3rem 0.6rem;
+    border-radius:99px;
+  }
+  .stat-mini b{ color:var(--terre-cuite-2); }
+
+  /* ---------- CAPTURE DU DRAPEAU ---------- */
+  .ctf-intro{
+    max-width:70ch;
+    opacity:0.85;
+    margin-bottom:2rem;
+  }
+
+  .pays-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1.5rem;
+  }
+
+  .pays-card{
+    border-radius:var(--radius);
+    padding:1.5rem;
+    border-top:4px solid var(--accent);
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+  }
+  .pays-card.secheresse{ --accent: var(--terre-cuite); }
+  .pays-card.marais{ --accent: var(--marais); }
+  .pays-card.cerisiers{ --accent: var(--cerisier); }
+
+  .pays-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:0.5rem;
+  }
+  .pays-head h3{
+    color:var(--texte-clair);
+    font-size:1.25rem;
+  }
+  .pays-count{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--accent);
+    white-space:nowrap;
+  }
+
+  .pays-jauge{
+    height:6px;
+    background:rgba(255,255,255,0.08);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .pays-jauge > span{
+    display:block;
+    height:100%;
+    background:var(--accent);
+  }
+
+  .drapeaux-liste{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+  }
+  .drapeau-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.75rem;
+    padding:0.55rem 0.7rem;
+    border-radius:var(--radius);
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .drapeau-item.capture{
+    background:rgba(var(--accent-rgb,216,166,79),0.14);
+    border-color:var(--accent);
+  }
+  .drapeau-nom{
+    display:flex;
+    align-items:center;
+    gap:0.55rem;
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+  }
+  .drapeau-icone{ color:var(--accent); font-size:0.9rem; }
+  .drapeau-statut{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:#9A8763;
+  }
+  .drapeau-item.capture .drapeau-statut{ color:var(--accent); }
+
+  .drapeau-btn{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--texte-clair);
+    padding:0.3rem 0.6rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .drapeau-btn:hover{ background:var(--accent); color:var(--nuit); }
+
+  .ctf-total{
+    margin-top:2rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:1rem;
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:var(--texte-clair);
+    border-top:1px solid rgba(216,166,79,0.2);
+    padding-top:1.25rem;
+  }
+  .ctf-total b{ color:var(--dune); font-size:1.1rem; }
+  .score-reset{
+    background:none;
+    border:none;
+    color:#9A8763;
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  ul.regles{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:0.75rem;
+  }
+  ul.regles li{
+    padding-left:1.6rem;
+    position:relative;
+    font-size:0.92rem;
+  }
+  ul.regles li::before{
+    content:"風";
+    position:absolute;
+    left:0;
+    top:0;
+    color:var(--dune);
+    font-family:serif;
+    font-size:0.85rem;
+  }
+
+  /* ---------- BASTION ---------- */
+  .bastion-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:1.25rem;
+  }
+  .structure h3{
+    font-size:1.15rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .structure .niv{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    color:var(--terre-cuite-2);
+  }
+  .barre{
+    height:8px;
+    background:rgba(0,0,0,0.1);
+    border-radius:99px;
+    margin-top:0.7rem;
+    overflow:hidden;
+  }
+  .barre > span{
+    display:block;
+    height:100%;
+    background:linear-gradient(90deg, var(--dune), var(--terre-cuite));
+  }
+  .structure p{
+    font-size:0.85rem;
+    margin:0.7rem 0 0 0;
+    opacity:0.85;
+  }
+
+  .garnison-table{
+    margin-top:2.5rem;
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+  }
+  .garnison-table th{
+    text-align:left;
+    text-transform:uppercase;
+    font-size:0.68rem;
+    letter-spacing:0.06em;
+    color:var(--terre-cuite-2);
+    border-bottom:2px solid var(--terre-cuite);
+    padding:0.5rem 0.6rem;
+  }
+  .garnison-table td{
+    padding:0.6rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+  }
+
+  /* ---------- GUERRE ---------- */
+  .timeline{
+    position:relative;
+    margin-top:1rem;
+    padding-left:2.5rem;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:0.85rem;
+    top:0.3rem;
+    bottom:0.3rem;
+    width:2px;
+    background:linear-gradient(180deg, var(--dune), var(--terre-cuite));
+  }
+  .phase{
+    position:relative;
+    padding-bottom:2rem;
+  }
+  .phase:last-child{ padding-bottom:0; }
+  .phase::before{
+    content:attr(data-n);
+    position:absolute;
+    left:-2.5rem;
+    top:0;
+    width:1.7rem;
+    height:1.7rem;
+    border-radius:50%;
+    background:var(--nuit);
+    color:var(--dune);
+    border:2px solid var(--dune);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    font-weight:700;
+  }
+  .phase h3{ color:var(--texte-clair); font-size:1.1rem; }
+  .phase p{ margin:0.4rem 0 0 0; opacity:0.85; font-size:0.9rem; max-width:60ch; }
+
+  .menaces{
+    margin-top:2.5rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:1rem;
+  }
+  .menace{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:0.75rem;
+  }
+  .niveau{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    text-transform:uppercase;
+    padding:0.2rem 0.55rem;
+    border-radius:99px;
+    white-space:nowrap;
+  }
+  .niveau.eleve{ background:rgba(166,58,44,0.25); color:#E38C7B; border:1px solid var(--alerte); }
+  .niveau.moyen{ background:rgba(211,162,76,0.2); color:var(--dune); border:1px solid var(--dune); }
+  .niveau.bas{ background:rgba(90,125,74,0.2); color:#9DBF89; border:1px solid var(--ok); }
+
+  /* ---------- PATROUILLE ---------- */
+  .patrouille-table-wrap{ overflow-x:auto; }
+  table.patrouille{
+    width:100%;
+    min-width:640px;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+  }
+  table.patrouille th{
+    background:var(--nuit);
+    color:var(--texte-clair);
+    text-align:left;
+    padding:0.6rem 0.7rem;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  table.patrouille td{
+    padding:0.6rem 0.7rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+  }
+  table.patrouille tbody tr:nth-child(even){ background:rgba(184,78,40,0.06); }
+  .creneau{
+    font-size:0.68rem;
+    padding:0.15rem 0.5rem;
+    border-radius:99px;
+    border:1px solid currentColor;
+  }
+  .creneau.jour{ color:#8F6A1F; }
+  .creneau.nuit{ color:var(--crepuscule); }
+
+  /* ---------- NAV — panneau de contrôle ---------- */
+  .nav-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    flex-wrap:wrap;
+  }
+  .nav-controls{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    flex-wrap:wrap;
+  }
+  .icon-btn{
+    width:2.2rem; height:2.2rem;
+    border-radius:var(--radius);
+    border:1px solid rgba(216,166,79,0.35);
+    background:transparent;
+    color:var(--texte-clair);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    position:relative;
+    font-size:1rem;
+  }
+  .icon-btn:hover{ border-color:var(--dune); }
+  .icon-btn .dot{
+    position:absolute; top:2px; right:2px;
+    width:7px; height:7px; border-radius:50%;
+    background:var(--terre-cuite);
+    border:1px solid var(--nuit);
+  }
+  .user-pill{
+    display:flex; align-items:center; gap:0.5rem;
+    border:1px solid rgba(216,166,79,0.35);
+    border-radius:99px;
+    padding:0.3rem 0.9rem 0.3rem 0.35rem;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:var(--texte-clair);
+  }
+  .avatar-circle{
+    width:1.7rem; height:1.7rem;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--dune), var(--terre-cuite));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display);
+    font-size:0.8rem;
+    color:var(--nuit);
+    font-weight:700;
+  }
+  .btn-ghost-small{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    background:transparent;
+    border:1px solid rgba(216,166,79,0.35);
+    color:var(--texte-clair);
+    padding:0.45rem 0.8rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .btn-ghost-small:hover{ border-color:var(--dune); }
+  .btn-admin{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    background:transparent;
+    border:1px solid var(--alerte);
+    color:#E38C7B;
+    padding:0.45rem 0.8rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .btn-admin.on{ background:var(--alerte); color:var(--texte-clair); }
+  .notif-panel{
+    position:absolute;
+    right:1.5rem;
+    top:3.6rem;
+    background:var(--nuit-2);
+    border:1px solid rgba(216,166,79,0.3);
+    border-radius:var(--radius);
+    padding:0.85rem 1rem;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    color:#C8B482;
+    max-width:220px;
+    display:none;
+    z-index:200;
+  }
+  .notif-panel.open{ display:block; }
+  .admin-only{ display:none; }
+  body.admin-mode .admin-only{ display:inline-flex; }
+  body.admin-mode .admin-only.block{ display:block; }
+  select.locked{ pointer-events:none; opacity:0.6; background:rgba(0,0,0,0.05); }
+
+  /* ---------- OFFENSIVE — vue d'ensemble ---------- */
+  .offensive-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1.5rem;
+    margin-bottom:2.5rem;
+  }
+  .offensive-card{
+    display:block;
+    text-decoration:none;
+    border-radius:var(--radius);
+    padding:1.6rem;
+    border-top:4px solid var(--terre-cuite);
+    background:var(--sable-carte);
+    transition:transform 0.12s ease;
+  }
+  .offensive-card:nth-child(2){ border-top-color:var(--marais); }
+  .offensive-card:hover{ transform:translateY(-2px); }
+  .offensive-card .ico{ font-size:1.4rem; }
+  .offensive-card h3{ margin-top:0.6rem; font-size:1.3rem; }
+  .offensive-card p{ margin:0.4rem 0 0 0; font-size:0.85rem; opacity:0.8; max-width:40ch; }
+
+  .rapports-head{
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:0.75rem;
+    margin-bottom:1rem;
+  }
+  .rapports-head h3{ font-size:1.05rem; }
+  .btn-small{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    background:var(--terre-cuite);
+    color:var(--nuit);
+    border:none;
+    font-weight:700;
+    padding:0.5rem 0.85rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .btn-small:hover{ background:var(--terre-cuite-2); }
+  .rapports-empty{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:#9A8763;
+    padding:1.5rem;
+    text-align:center;
+    border:1px dashed rgba(0,0,0,0.15);
+    border-radius:var(--radius);
+  }
+  .rapport-item{
+    padding:1rem 1.1rem;
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:var(--radius);
+    margin-bottom:0.75rem;
+    background:var(--sable-carte);
+  }
+  .rapport-item h4{ margin:0 0 0.3rem 0; font-family:var(--font-display); font-size:1.05rem; }
+  .rapport-item p{ margin:0; font-size:0.85rem; opacity:0.85; }
+  .rapport-item .meta{ font-family:var(--font-mono); font-size:0.65rem; color:var(--terre-cuite-2); text-transform:uppercase; letter-spacing:0.05em; }
+  .rapport-form{ display:none; gap:0.6rem; flex-direction:column; margin-bottom:1.25rem; }
+  .rapport-form.open{ display:flex; }
+  .rapport-form input, .rapport-form textarea{
+    width:100%; padding:0.55rem 0.6rem; border:1px solid #b89a5c; border-radius:var(--radius);
+    background:#fbf3dd; font-family:var(--font-body); font-size:0.88rem;
+  }
+
+  /* ---------- CARTE — marqueurs interactifs ---------- */
+  .carte-wrap{ position:relative; }
+  .flag-marker{
+    position:absolute;
+    width:24px; height:24px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    border:2px solid var(--texte-clair);
+    background:rgba(35,24,15,0.6);
+    color:var(--texte-clair);
+    font-size:0.72rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  .flag-marker:hover{ border-color:var(--dune); }
+  .flag-marker.captured{ background:var(--terre-cuite); border-color:var(--terre-cuite); color:var(--nuit); }
+
+  .flag-panel{
+    margin-top:1.5rem;
+    background:var(--nuit-2);
+    border:1px solid rgba(216,166,79,0.3);
+    border-radius:var(--radius);
+    padding:1.5rem;
+    display:none;
+  }
+  .flag-panel.open{ display:block; }
+  .flag-panel-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;
+    margin-bottom:1.1rem;
+  }
+  .flag-panel-head h3{ color:var(--texte-clair); font-size:1.3rem; }
+  .flag-panel-head .sub{ font-family:var(--font-mono); font-size:0.7rem; color:#9A8763; text-transform:uppercase; letter-spacing:0.05em; margin-top:0.2rem; }
+  .flag-panel-close{
+    background:none; border:1px solid rgba(216,166,79,0.3); color:var(--texte-clair);
+    width:1.9rem; height:1.9rem; border-radius:var(--radius); cursor:pointer;
+  }
+  .flag-panel label{
+    font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--dune); display:block; margin-bottom:0.3rem; margin-top:0.9rem;
+  }
+  .flag-panel input, .flag-panel select{
+    width:100%; padding:0.55rem 0.6rem; border:1px solid rgba(216,166,79,0.35); border-radius:var(--radius);
+    background:var(--nuit); color:var(--texte-clair); font-family:var(--font-body); font-size:0.9rem;
+  }
+  .flag-panel-actions{ display:flex; gap:0.7rem; flex-wrap:wrap; margin-top:1.2rem; }
+
+  .team-panel{
+    margin-top:1.25rem;
+    padding-top:1.25rem;
+    border-top:1px solid rgba(216,166,79,0.2);
+    display:none;
+  }
+  .team-panel.open{ display:block; }
+  .mode-row{ display:flex; gap:0.6rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .mode-btn{
+    font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.03em;
+    padding:0.6rem 1rem; border-radius:var(--radius); border:1px solid rgba(216,166,79,0.35);
+    background:transparent; color:var(--texte-clair); cursor:pointer;
+  }
+  .mode-btn.active{ background:var(--terre-cuite); border-color:var(--terre-cuite); color:var(--nuit); font-weight:700; }
+  .team-slots{ display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem; }
+  .team-slot{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0.6rem 0.8rem; border:1px solid rgba(216,166,79,0.2); border-radius:var(--radius);
+    font-family:var(--font-mono); font-size:0.8rem; color:var(--texte-clair);
+  }
+  .team-slot select{ background:var(--nuit); }
+  .team-slot .role{ color:#9A8763; text-transform:uppercase; font-size:0.65rem; letter-spacing:0.05em; }
+  .team-empty{ font-family:var(--font-mono); font-size:0.78rem; color:#9A8763; }
+
+  /* ---------- BATAILLES DE BASTIONS ---------- */
+  .bataille-head-row{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;
+    margin-bottom:1.5rem;
+  }
+  .bataille-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1.5rem;
+  }
+  .bataille-card{
+    background:var(--sable-carte);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:var(--radius);
+    padding:1.5rem;
+  }
+  .bataille-card h3{ font-size:1.15rem; }
+  .bataille-card .prop{ font-family:var(--font-mono); font-size:0.78rem; color:var(--terre-cuite-2); margin-top:0.35rem; }
+  .bataille-card .req{ font-size:0.82rem; opacity:0.75; margin-top:0.5rem; }
+  .bataille-card .btn-row{ display:flex; flex-direction:column; gap:0.5rem; margin-top:1.1rem; }
+  .btn-conflict{
+    font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.03em;
+    background:var(--terre-cuite); color:var(--nuit); border:none; font-weight:700;
+    padding:0.6rem; border-radius:var(--radius); cursor:pointer;
+  }
+  .btn-conflict:disabled{ background:rgba(0,0,0,0.1); color:#9A8763; cursor:not-allowed; }
+  .btn-conflict:not(:disabled):hover{ background:var(--terre-cuite-2); }
+  .btn-supprimer{
+    font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase;
+    background:transparent; border:1px solid var(--alerte); color:var(--alerte);
+    padding:0.5rem; border-radius:var(--radius); cursor:pointer;
+  }
+  .btn-supprimer:hover{ background:var(--alerte); color:var(--texte-clair); }
+
+  /* ---------- CARTES NINJA ---------- */
+  .ninja-tier{ margin-bottom:2.25rem; }
+  .ninja-tier:last-child{ margin-bottom:0; }
+  .ninja-tier-label{
+    font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--terre-cuite-2); border-bottom:1px solid rgba(184,78,40,0.25); padding-bottom:0.5rem; margin-bottom:0.9rem;
+  }
+  .ninja-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:1rem;
+  }
+  .ninja-card{
+    background:var(--sable-carte);
+    border-left:4px solid var(--terre-cuite);
+    border-radius:var(--radius);
+    padding:1.1rem 1.2rem;
+  }
+  .ninja-card-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; }
+  .disp-badge{
+    font-family:var(--font-mono); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.04em;
+    padding:0.15rem 0.5rem; border-radius:99px; border:1px solid currentColor;
+  }
+  .disp-badge.actif{ color:var(--ok); }
+  .disp-badge.mission{ color:var(--dune); }
+  .disp-badge.repos{ color:#9A8763; }
+  .rank-badge{
+    font-family:var(--font-mono); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.04em;
+    color:var(--terre-cuite-2);
+  }
+  .ninja-card h4{ font-family:var(--font-display); font-size:1.15rem; margin:0 0 0.3rem 0; }
+  .ninja-card .spe{ font-size:0.82rem; opacity:0.8; display:flex; align-items:center; gap:0.35rem; }
+  .ninja-card .stats{ font-family:var(--font-mono); font-size:0.7rem; color:#9A8763; margin-top:0.6rem; }
+  .ninja-card-del{
+    margin-top:0.7rem;
+    background:none; border:1px solid var(--terre-cuite-2); color:var(--terre-cuite-2);
+    font-family:var(--font-mono); font-size:0.65rem; padding:0.25rem 0.5rem; border-radius:var(--radius); cursor:pointer;
+  }
+  .ninja-card-del:hover{ background:var(--terre-cuite-2); color:var(--texte-clair); }
+
+  footer{
+    background:var(--nuit);
+    color:#9A8763;
+    text-align:center;
+    padding:2.5rem 1.5rem;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.04em;
+  }
+  footer .kanji-mark{ color:var(--dune); font-size:1.1rem; display:block; margin-bottom:0.5rem; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-top">
+      <div class="nav-brand"><span class="kanji-mark">砂</span> SUNA STRATEGIE</div>
+      <div class="nav-controls">
+        <button class="icon-btn" id="btnNotif" type="button" title="Notifications" aria-haspopup="true">🔔<span class="dot"></span></button>
+        <div class="user-pill"><span class="avatar-circle">Kz</span> kazekage_officiel</div>
+        <button class="btn-ghost-small" id="btnLogout" type="button">Se déconnecter</button>
+        <button class="btn-admin" id="btnAdmin" type="button">🔒 Administration</button>
+      </div>
+    </div>
+    <nav class="links" id="navLinks">
+      <a href="#accueil">Accueil</a>
+      <a href="#offensive">Offensive</a>
+      <a href="#carte">Territoires</a>
+      <a href="#batailles">Bastions</a>
+      <a href="#registre">Cartes ninja</a>
+      <a href="#bastion">Fortifications</a>
+      <a href="#guerre">Guerre</a>
+      <a href="#patrouille">Patrouille</a>
+    </nav>
+  </div>
+  <div class="notif-panel" id="notifPanel">Aucune notification pour le moment. Les alertes de capture et de conflit de bastion apparaîtront ici.</div>
+</header>
+
+<section class="hero" id="accueil">
+  <div class="hero-kanji kanji-mark">砂</div>
+  <div class="hero-inner">
+    <p class="eyebrow">Dossier de commandement — village caché du sable</p>
+    <h1>La stratégie de <span>Suna</span> se pilote ici.</h1>
+    <p class="lede">Un tableau de bord unique pour tenir le registre des ninjas, organiser les captures de drapeau, superviser le bastion, planifier la guerre et couvrir les patrouilles du désert.</p>
+    <div class="hero-cta">
+      <a href="#registre" class="btn btn-fill">Ouvrir le registre</a>
+      <a href="#ctf" class="btn btn-outline">Voir la capture du drapeau</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="num" id="statTotal">5</div><div class="label">Ninjas enregistrés</div></div>
+      <div><div class="num">7</div><div class="label">Rangs actifs</div></div>
+      <div><div class="num">6</div><div class="label">Structures du bastion</div></div>
+      <div><div class="num">5</div><div class="label">Phases de guerre</div></div>
+    </div>
+  </div>
+  <svg class="dune-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,90 L0,90 Z" fill="#F1E2B8"></path>
+  </svg>
+</section>
+
+<!-- ============ OFFENSIVE ============ -->
+<section class="panel" id="offensive">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Branche militaire</p>
+        <h2>Offensive</h2>
+        <p>Captures de territoire, organisation territoriale et opérations offensives. Les inscriptions aux captures restent ouvertes à tous depuis la carte des territoires.</p>
+      </div>
+    </div>
+
+    <div class="offensive-grid">
+      <a href="#carte" class="offensive-card">
+        <div class="ico">⚑</div>
+        <h3>Territoires</h3>
+        <p>Consulter la carte, les captures en cours et composer les équipes.</p>
+      </a>
+      <a href="#batailles" class="offensive-card">
+        <div class="ico">⚔</div>
+        <h3>Bastions</h3>
+        <p>Conflits de bastions, planification et compositions d'équipe.</p>
+      </a>
+    </div>
+
+    <div class="rapports-head">
+      <h3>Rapports d'opération (<span id="rapportsCount">0</span>)</h3>
+      <button class="btn-small" id="btnToggleRapport" type="button">+ Nouveau rapport</button>
+    </div>
+    <div class="rapport-form" id="rapportForm">
+      <input type="text" id="inpRapportTitre" placeholder="Titre du rapport (ex. Escarmouche — Marais 3)">
+      <textarea id="inpRapportTexte" rows="3" placeholder="Compte-rendu de l'opération…"></textarea>
+      <button class="btn-small" id="btnSaveRapport" type="button" style="align-self:flex-start;">Enregistrer le rapport</button>
+    </div>
+    <div id="rapportsList"><p class="rapports-empty">Aucun rapport rédigé pour le moment.</p></div>
+  </div>
+</section>
+
+<!-- ============ CARTE DU MONDE ============ -->
+<section class="panel" id="carte">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Territoires</p>
+        <h2>Carte du monde shinobi</h2>
+        <p>Sunagakure au Pays du Vent, les trois pays neutres à surveiller, et les grandes puissances alentour.</p>
+      </div>
+    </div>
+
+    <div class="carte-wrap" id="carteWrap">
+      <img src="carte-monde-shinobi.png" alt="Carte du monde shinobi : Pays du Vent avec Sunagakure, Pays de la Pluie, Pays des Marais, Pays du Feu, Pays de la Sécheresse, Pays des Cerisiers (Yozakura), Pays du Fer et Pays des Plages, avec bastions, drapeaux et frontières indiqués." loading="lazy">
+      <!-- les marqueurs de drapeaux sont injectés ici en JS -->
+    </div>
+
+    <div class="carte-legende">
+      <div class="legende-item"><span class="legende-ico">Ⓐ</span> Bastion</div>
+      <div class="legende-item"><span class="legende-ico">⚑</span> Drapeau — cliquez un marqueur pour l'ouvrir</div>
+      <div class="legende-item"><span class="legende-ico">╫╫╫</span> Frontière</div>
+    </div>
+
+    <!-- Panneau de drapeau (ouvert au clic sur un marqueur ou "Composer une équipe") -->
+    <div class="flag-panel" id="flagPanel">
+      <div class="flag-panel-head">
+        <div>
+          <h3 id="flagPanelTitle">—</h3>
+          <div class="sub" id="flagPanelSub">—</div>
+        </div>
+        <button class="flag-panel-close" id="flagPanelClose" type="button" aria-label="Fermer">✕</button>
+      </div>
+
+      <label for="flagPanelNom">Nom du drapeau</label>
+      <input type="text" id="flagPanelNom" disabled>
+
+      <label for="flagPanelStatut">Statut (modifiable par un instructeur)</label>
+      <select id="flagPanelStatut">
+        <option value="libre">Libre</option>
+        <option value="en_cours">En cours de capture</option>
+        <option value="capture">Capturé</option>
+      </select>
+
+      <div class="flag-panel-actions">
+        <button class="btn btn-fill" id="btnInscrireCapture" type="button">S'inscrire à la capture</button>
+        <button class="btn btn-outline" id="btnComposerEquipe" type="button" style="color:var(--nuit); border-color:var(--terre-cuite-2);">Composer une équipe</button>
+      </div>
+
+      <div class="team-panel" id="teamPanel">
+        <div class="mode-row">
+          <button class="mode-btn active" id="modeAuto" type="button">Génération automatique</button>
+          <button class="mode-btn" id="modeManuel" type="button">Composition manuelle</button>
+        </div>
+        <button class="btn btn-outline" id="btnGenererProposition" type="button" style="color:var(--nuit); border-color:var(--terre-cuite-2); margin-bottom:1rem;">Générer une proposition</button>
+        <div class="team-slots" id="teamSlots"><p class="team-empty">Aucune équipe composée pour l'instant.</p></div>
+        <button class="btn btn-fill" id="btnCreerEquipe" type="button">Créer l'équipe</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REGISTRE ============ -->
+<section class="panel" id="registre">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Module 1</p>
+        <h2>Cartes ninja</h2>
+        <p>Chaque shinobi disponible, en mission ou au repos, consigné avec son rang, sa spécialité et son palmarès.</p>
+      </div>
+    </div>
+
+    <div class="registre-grid">
+      <div>
+        <div class="stat-mini-row" id="statMiniRow"></div>
+        <div id="registreBody"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:1.1rem; margin-bottom:1rem;">Enregistrer un ninja</h3>
+        <form class="enregistrer" id="formNinja">
+          <div>
+            <label for="inpNom">Nom</label>
+            <input type="text" id="inpNom" placeholder="Ex. Aoi Suzumebachi" required>
+          </div>
+          <div>
+            <label for="inpRang">Rang</label>
+            <select id="inpRang">
+              <option value="genin">Genin</option>
+              <option value="genin_confirme">Genin Confirmé</option>
+              <option value="chunin">Chūnin</option>
+              <option value="chunin_confirme">Chūnin Confirmé</option>
+              <option value="jonin">Jōnin</option>
+              <option value="commandant_jonin">Commandant Jōnin</option>
+              <option value="kage">Kage</option>
+            </select>
+          </div>
+          <div>
+            <label for="inpSpecialite">Spécialité</label>
+            <input type="text" id="inpSpecialite" placeholder="Ex. Manipulation du sable" required>
+          </div>
+          <div>
+            <label for="inpStatut">Statut</label>
+            <select id="inpStatut">
+              <option value="actif">Disponible</option>
+              <option value="mission">En mission</option>
+              <option value="repos">Indisponible</option>
+            </select>
+          </div>
+          <button type="submit">Ajouter au registre</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPTURE DU DRAPEAU ============ -->
+<section class="panel dark" id="ctf">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 02</p>
+        <h2>Capture du drapeau</h2>
+        <p>Trois pays frontaliers, trois drapeaux à tenir chacun. Chaque case suit l'état d'un étendard.</p>
+      </div>
+    </div>
+
+    <ul class="regles ctf-intro">
+      <li>Chaque pays défend trois drapeaux répartis sur son territoire, numérotés 1 à 3.</li>
+      <li>Un drapeau capturé bascule sur « Capturé » ; il peut être repris par le camp adverse à tout moment.</li>
+      <li>Un pays tombe lorsque ses trois drapeaux sont capturés au même moment.</li>
+      <li>Les techniques de dissimulation sont autorisées, les pièges explosifs sont interdits en zone de capture.</li>
+    </ul>
+
+    <div class="pays-grid" id="paysGrid"></div>
+
+    <div class="ctf-total">
+      <div>Drapeaux capturés au total : <b id="ctfTotal">0</b> / 9</div>
+      <button class="score-reset" id="ctfReset">Réinitialiser tous les drapeaux</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BATAILLES DE BASTIONS ============ -->
+<section class="panel" id="batailles">
+  <div class="panel-inner">
+    <div class="bataille-head-row">
+      <div class="section-head" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">
+        <div>
+          <p class="eyebrow">Module — Offensive</p>
+          <h2>Batailles de bastions</h2>
+          <p>Un village qui contrôle 2 des 3 drapeaux d'une région peut défier le propriétaire actuel du bastion correspondant (ou le réclamer s'il est libre).</p>
+        </div>
+      </div>
+      <button class="btn-ghost-small" style="color:var(--terre-cuite-2); border-color:rgba(184,78,40,0.3);" id="btnResetBastions" type="button">Réinitialiser les bastions</button>
+    </div>
+
+    <div class="bataille-grid" id="batailleGrid"></div>
+  </div>
+</section>
+
+<!-- ============ BASTION ============ -->
+<section class="panel" id="bastion">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 03</p>
+        <h2>Fortifications</h2>
+        <p>L'état des fortifications du village et la garnison affectée à chacune.</p>
+      </div>
+    </div>
+
+    <div class="bastion-grid" id="bastionGrid"></div>
+
+    <table class="garnison-table">
+      <thead>
+        <tr><th>Poste</th><th>Ninja de garde</th><th>Créneau</th></tr>
+      </thead>
+      <tbody id="garnisonBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ GUERRE ============ -->
+<section class="panel dark" id="guerre">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 04</p>
+        <h2>Guerre</h2>
+        <p>Le déroulé d'une campagne, phase par phase, et les menaces surveillées à la frontière.</p>
+      </div>
+    </div>
+
+    <div class="timeline" id="timelineGuerre"></div>
+
+    <div class="menaces" id="menacesGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PATROUILLE ============ -->
+<section class="panel" id="patrouille">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 05</p>
+        <h2>Patrouille</h2>
+        <p>Le tour de garde hebdomadaire des abords du village, zone par zone.</p>
+      </div>
+    </div>
+
+    <div class="patrouille-table-wrap">
+      <table class="patrouille">
+        <thead>
+          <tr><th>Jour</th><th>Zone</th><th>Ninja assigné</th><th>Créneau</th></tr>
+        </thead>
+        <tbody id="patrouilleBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="kanji-mark">砂</span>
+  Village caché du Sable — dossier de stratégie interne
+</footer>
+
+<script>
+(function(){
+
+  /* ---------- Nav active state ---------- */
+  const navLinks = Array.from(document.querySelectorAll('#navLinks a'));
+  const sections = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const id = '#' + entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  sections.forEach(s => s && io.observe(s));
+
+  /* ---------- Panneau de contrôle : admin, notifications, déconnexion ---------- */
+  const btnAdmin = document.getElementById('btnAdmin');
+  btnAdmin.addEventListener('click', () => {
+    const on = document.body.classList.toggle('admin-mode');
+    btnAdmin.classList.toggle('on', on);
+    btnAdmin.textContent = on ? '🔓 Mode instructeur actif' : '🔒 Administration';
+  });
+
+  const notifPanel = document.getElementById('notifPanel');
+  document.getElementById('btnNotif').addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifPanel.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if(!notifPanel.contains(e.target) && e.target.id !== 'btnNotif'){
+      notifPanel.classList.remove('open');
+    }
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    alert('Déconnexion simulée — ceci est un dossier de démonstration statique.');
+  });
+
+  /* ---------- Cartes ninja ---------- */
+  const rangLabels = {
+    kage:'Kage', commandant_jonin:'Commandant Jōnin', jonin:'Jōnin',
+    chunin_confirme:'Chūnin Confirmé', chunin:'Chūnin',
+    genin_confirme:'Genin Confirmé', genin:'Genin'
+  };
+  const rangOrdre = ['kage','commandant_jonin','jonin','chunin_confirme','chunin','genin_confirme','genin'];
+
+  let ninjas = [
+    { nom:'Kaito Amaya', rang:'kage', specialite:'Marionnettiste de combat', statut:'actif', victoires:28, combats:29 },
+    { nom:'Suzu Kazehana', rang:'commandant_jonin', specialite:'Maîtrise du vent', statut:'actif', victoires:15, combats:15 },
+    { nom:'Ren Ishikage', rang:'jonin', specialite:'Infiltration et sceaux', statut:'mission', victoires:9, combats:9 },
+    { nom:'Hana Suzuran', rang:'jonin', specialite:'Éclaireuse du désert', statut:'actif', victoires:3, combats:3 },
+    { nom:'Wakana Hoshigaki', rang:'chunin', specialite:'Manipulation du sable liquide', statut:'actif', victoires:4, combats:5 },
+    { nom:'Daichi Yamakaze', rang:'genin_confirme', specialite:'Golems de sable', statut:'repos', victoires:1, combats:2 },
+    { nom:'Isuzu Kagemaru', rang:'genin', specialite:'Pièges de sable', statut:'actif', victoires:0, combats:0 },
+  ];
+
+  const registreBody = document.getElementById('registreBody');
+  const statMiniRow = document.getElementById('statMiniRow');
+  const statTotal = document.getElementById('statTotal');
+
+  function statutLabel(s){
+    return s === 'actif' ? 'Disponible' : s === 'mission' ? 'En mission' : 'Indisponible';
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderRegistre(){
+    const parIndexOriginal = ninjas.map((n, i) => ({ ...n, _i:i }));
+    const tiers = rangOrdre
+      .map(r => ({ rang:r, items: parIndexOriginal.filter(n => n.rang === r) }))
+      .filter(t => t.items.length > 0);
+
+    registreBody.innerHTML = tiers.map(t => `
+      <div class="ninja-tier">
+        <div class="ninja-tier-label">${rangLabels[t.rang]} — ${t.items.length}</div>
+        <div class="ninja-cards">
+          ${t.items.map(n => `
+            <div class="ninja-card">
+              <div class="ninja-card-top">
+                <span class="disp-badge ${n.statut}">${statutLabel(n.statut)}</span>
+                <span class="rank-badge">${rangLabels[n.rang]}</span>
+              </div>
+              <h4>${escapeHtml(n.nom)}</h4>
+              <div class="spe">💧 ${escapeHtml(n.specialite)}</div>
+              <div class="stats">${n.victoires} victoires · ${n.combats} combats</div>
+              <button class="ninja-card-del admin-only" data-i="${n._i}">Retirer</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    statTotal.textContent = ninjas.length;
+
+    const counts = {}; rangOrdre.forEach(r => counts[r] = 0);
+    ninjas.forEach(n => counts[n.rang]++);
+    statMiniRow.innerHTML = rangOrdre.filter(r => counts[r] > 0).map(r =>
+      `<span class="stat-mini"><b>${counts[r]}</b> ${rangLabels[r]}</span>`
+    ).join('');
+  }
+
+  registreBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ninja-card-del');
+    if(!btn) return;
+    const i = Number(btn.dataset.i);
+    ninjas.splice(i, 1);
+    renderRegistre();
+    renderTeamPanel();
+  });
+
+  document.getElementById('formNinja').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nom = document.getElementById('inpNom').value.trim();
+    const rang = document.getElementById('inpRang').value;
+    const specialite = document.getElementById('inpSpecialite').value.trim();
+    const statut = document.getElementById('inpStatut').value;
+    if(!nom || !specialite) return;
+    ninjas.push({ nom, rang, specialite, statut, victoires:0, combats:0 });
+    renderRegistre();
+    e.target.reset();
+    document.getElementById('inpNom').focus();
+  });
+
+  renderRegistre();
+
+  /* ---------- Territoires : pays, drapeaux, carte interactive ---------- */
+  const pays = [
+    { id:'secheresse', nom:'Pays de la Sécheresse', classe:'secheresse',
+      drapeaux:[ { nom:'Drapeau 1', capture:false, x:33.5, y:54.2 }, { nom:'Drapeau 2', capture:false, x:37.3, y:30.1 }, { nom:'Drapeau 3', capture:false, x:27.4, y:43.1 } ] },
+    { id:'marais', nom:'Pays des Marais', classe:'marais',
+      drapeaux:[ { nom:'Drapeau 1', capture:false, x:46.7, y:32.4 }, { nom:'Drapeau 2', capture:false, x:46.4, y:40.5 }, { nom:'Drapeau 3', capture:false, x:51.7, y:43.3 } ] },
+    { id:'cerisiers', nom:'Pays des Cerisiers', classe:'cerisiers',
+      drapeaux:[ { nom:'Drapeau 1', capture:false, x:21.3, y:71.0 }, { nom:'Drapeau 2', capture:false, x:18.5, y:59.4 }, { nom:'Drapeau 3', capture:false, x:25.4, y:59.4 } ] },
+  ];
+
+  const paysGrid = document.getElementById('paysGrid');
+  const ctfTotal = document.getElementById('ctfTotal');
+  const carteWrap = document.getElementById('carteWrap');
+
+  function renderPays(){
+    paysGrid.innerHTML = pays.map(p => {
+      const nbCaptures = p.drapeaux.filter(d => d.capture).length;
+      const pct = Math.round((nbCaptures / p.drapeaux.length) * 100);
+      return `
+        <div class="pays-card ${p.classe}">
+          <div class="pays-head">
+            <h3>${p.nom}</h3>
+            <span class="pays-count">${nbCaptures}/${p.drapeaux.length} capturés</span>
+          </div>
+          <div class="pays-jauge"><span style="width:${pct}%;"></span></div>
+          <ul class="drapeaux-liste">
+            ${p.drapeaux.map((d, i) => `
+              <li class="drapeau-item ${d.capture ? 'capture' : ''}">
+                <span class="drapeau-nom"><span class="drapeau-icone">⚑</span> ${d.nom}</span>
+                <span style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span class="drapeau-statut">${d.capture ? 'Capturé' : 'En place'}</span>
+                  <button class="drapeau-btn" data-pays="${p.id}" data-drapeau="${i}" data-action="toggle">${d.capture ? 'Reprendre' : 'Capturer'}</button>
+                  <button class="drapeau-btn" data-pays="${p.id}" data-drapeau="${i}" data-action="ouvrir">Ouvrir</button>
+                </span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
+
+    const total = pays.reduce((sum, p) => sum + p.drapeaux.filter(d => d.capture).length, 0);
+    ctfTotal.textContent = total;
+
+    // marqueurs sur la carte
+    Array.from(carteWrap.querySelectorAll('.flag-marker')).forEach(m => m.remove());
+    pays.forEach(p => {
+      p.drapeaux.forEach((d, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'flag-marker' + (d.capture ? ' captured' : '');
+        btn.style.left = d.x + '%';
+        btn.style.top = d.y + '%';
+        btn.title = `${p.nom} — ${d.nom}`;
+        btn.dataset.pays = p.id;
+        btn.dataset.drapeau = i;
+        btn.innerHTML = '⚑';
+        carteWrap.appendChild(btn);
+      });
+    });
+
+    renderBatailles();
+  }
+
+  paysGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.drapeau-btn');
+    if(!btn) return;
+    const p = pays.find(p => p.id === btn.dataset.pays);
+    const i = Number(btn.dataset.drapeau);
+    if(btn.dataset.action === 'toggle'){
+      p.drapeaux[i].capture = !p.drapeaux[i].capture;
+      renderPays();
+    } else {
+      openFlagPanel(p.id, i);
+    }
+  });
+
+  carteWrap.addEventListener('click', (e) => {
+    const marker = e.target.closest('.flag-marker');
+    if(!marker) return;
+    openFlagPanel(marker.dataset.pays, Number(marker.dataset.drapeau));
+  });
+
+  document.getElementById('ctfReset').addEventListener('click', () => {
+    pays.forEach(p => p.drapeaux.forEach(d => d.capture = false));
+    renderPays();
+  });
+
+  /* ---------- Panneau de drapeau + composition d'équipe ---------- */
+  const flagPanel = document.getElementById('flagPanel');
+  const flagPanelTitle = document.getElementById('flagPanelTitle');
+  const flagPanelSub = document.getElementById('flagPanelSub');
+  const flagPanelNom = document.getElementById('flagPanelNom');
+  const flagPanelStatut = document.getElementById('flagPanelStatut');
+  const teamPanel = document.getElementById('teamPanel');
+  const teamSlots = document.getElementById('teamSlots');
+  const modeAuto = document.getElementById('modeAuto');
+  const modeManuel = document.getElementById('modeManuel');
+
+  let currentFlag = null; // { paysId, index }
+  let teamMode = 'auto';
+  const equipes = {}; // clé "paysId-index" -> tableau de noms
+
+  function flagKey(paysId, index){ return paysId + '-' + index; }
+
+  function openFlagPanel(paysId, index){
+    const p = pays.find(p => p.id === paysId);
+    const d = p.drapeaux[index];
+    currentFlag = { paysId, index };
+    flagPanelTitle.textContent = d.nom;
+    flagPanelSub.textContent = `${p.nom} — Drapeau ${index + 1}`;
+    flagPanelNom.value = d.nom;
+    flagPanelStatut.value = d.capture ? 'capture' : 'libre';
+    flagPanel.classList.add('open');
+    teamPanel.classList.remove('open');
+    renderTeamPanel();
+    flagPanel.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  document.getElementById('flagPanelClose').addEventListener('click', () => {
+    flagPanel.classList.remove('open');
+    currentFlag = null;
+  });
+
+  flagPanelStatut.addEventListener('change', () => {
+    if(!currentFlag) return;
+    const p = pays.find(p => p.id === currentFlag.paysId);
+    p.drapeaux[currentFlag.index].capture = (flagPanelStatut.value === 'capture');
+    renderPays();
+  });
+
+  document.getElementById('btnInscrireCapture').addEventListener('click', () => {
+    if(!currentFlag) return;
+    flagPanelStatut.value = 'en_cours';
+    alert('Inscription à la capture enregistrée. Un instructeur validera le résultat.');
+  });
+
+  document.getElementById('btnComposerEquipe').addEventListener('click', () => {
+    teamPanel.classList.toggle('open');
+  });
+
+  modeAuto.addEventListener('click', () => { teamMode = 'auto'; modeAuto.classList.add('active'); modeManuel.classList.remove('active'); });
+  modeManuel.addEventListener('click', () => { teamMode = 'manuel'; modeManuel.classList.add('active'); modeAuto.classList.remove('active'); });
+
+  function renderTeamPanel(){
+    if(!currentFlag){ teamSlots.innerHTML = '<p class="team-empty">Aucune équipe composée pour l\'instant.</p>'; return; }
+    const key = flagKey(currentFlag.paysId, currentFlag.index);
+    const equipe = equipes[key];
+    if(!equipe || equipe.length === 0){
+      teamSlots.innerHTML = '<p class="team-empty">Aucune équipe composée pour l\'instant. Utilisez « Générer une proposition » ou composez manuellement ci-dessous.</p>';
+      if(teamMode === 'manuel'){
+        teamSlots.innerHTML += ninjas.filter(n => n.statut === 'actif').map((n,i) => `
+          <div class="team-slot"><span>${escapeHtml(n.nom)} <span class="role">${rangLabels[n.rang]}</span></span>
+          <button class="drapeau-btn" data-manuel-add="${n.nom}">Ajouter</button></div>
+        `).join('');
+      }
+      return;
+    }
+    teamSlots.innerHTML = equipe.map(nom => `
+      <div class="team-slot"><span>${escapeHtml(nom)}</span><span class="role">Assigné</span></div>
+    `).join('');
+  }
+
+  teamSlots.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-manuel-add]');
+    if(!btn || !currentFlag) return;
+    const key = flagKey(currentFlag.paysId, currentFlag.index);
+    equipes[key] = equipes[key] || [];
+    if(!equipes[key].includes(btn.dataset.manuelAdd)) equipes[key].push(btn.dataset.manuelAdd);
+    renderTeamPanel();
+  });
+
+  document.getElementById('btnGenererProposition').addEventListener('click', () => {
+    if(!currentFlag) return;
+    const key = flagKey(currentFlag.paysId, currentFlag.index);
+    const disponibles = ninjas.filter(n => n.statut === 'actif').map(n => n.nom);
+    const shuffled = disponibles.sort(() => Math.random() - 0.5);
+    equipes[key] = shuffled.slice(0, Math.min(4, shuffled.length));
+    renderTeamPanel();
+  });
+
+  document.getElementById('btnCreerEquipe').addEventListener('click', () => {
+    if(!currentFlag) return;
+    const key = flagKey(currentFlag.paysId, currentFlag.index);
+    if(!equipes[key] || equipes[key].length === 0){
+      alert('Composez d\'abord une équipe avant de la créer.');
+      return;
+    }
+    alert(`Équipe créée pour ${flagPanelTitle.textContent} : ${equipes[key].join(', ')}`);
+  });
+
+  /* ---------- Batailles de bastions ---------- */
+  let bastionsBatailles = [
+    { id:'secheresse', nom:'Bastion Sécheresse', regionId:'secheresse', proprietaire:null, manuel:false },
+    { id:'marais', nom:'Bastion Marais', regionId:'marais', proprietaire:null, manuel:false },
+    { id:'cerisiers', nom:'Bastion Cerisiers', regionId:'cerisiers', proprietaire:null, manuel:false },
+    { id:'palges', nom:'Bastion des Plages', regionId:null, proprietaire:null, manuel:true },
+  ];
+  const bastionsBataillesInit = JSON.parse(JSON.stringify(bastionsBatailles));
+  const batailleGrid = document.getElementById('batailleGrid');
+
+  function renderBatailles(){
+    batailleGrid.innerHTML = bastionsBatailles.map(b => {
+      let capturesRegion = 0;
+      if(b.regionId){
+        const p = pays.find(p => p.id === b.regionId);
+        capturesRegion = p ? p.drapeaux.filter(d => d.capture).length : 0;
+      }
+      const eligible = b.manuel || capturesRegion >= 2;
+      return `
+        <div class="bataille-card">
+          <h3>⚔ ${b.nom}</h3>
+          <div class="prop">Propriétaire : ${b.proprietaire ? escapeHtml(b.proprietaire) : 'Aucun'}</div>
+          <div class="req">${b.manuel ? 'Bastion géré manuellement (pas de région liée)' : `2 drapeaux d'une même région requis (${capturesRegion}/3 capturés)`}</div>
+          <div class="btn-row">
+            <button class="btn-conflict" data-id="${b.id}" ${eligible ? '' : 'disabled'}>⚔ Déclencher un conflit manuellement</button>
+            <button class="btn-supprimer admin-only" data-supprimer="${b.id}">Supprimer</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  batailleGrid.addEventListener('click', (e) => {
+    const conflictBtn = e.target.closest('.btn-conflict');
+    if(conflictBtn && !conflictBtn.disabled){
+      const b = bastionsBatailles.find(b => b.id === conflictBtn.dataset.id);
+      b.proprietaire = b.proprietaire === 'Sunagakure' ? null : 'Sunagakure';
+      renderBatailles();
+      return;
+    }
+    const delBtn = e.target.closest('[data-supprimer]');
+    if(delBtn){
+      bastionsBatailles = bastionsBatailles.filter(b => b.id !== delBtn.dataset.supprimer);
+      renderBatailles();
+    }
+  });
+
+  document.getElementById('btnResetBastions').addEventListener('click', () => {
+    bastionsBatailles = JSON.parse(JSON.stringify(bastionsBataillesInit));
+    renderBatailles();
+  });
+
+  renderPays();
+
+  /* ---------- Rapports d'opération ---------- */
+  let rapports = [];
+  const rapportsList = document.getElementById('rapportsList');
+  const rapportsCount = document.getElementById('rapportsCount');
+  const rapportForm = document.getElementById('rapportForm');
+
+  function renderRapports(){
+    rapportsCount.textContent = rapports.length;
+    if(rapports.length === 0){
+      rapportsList.innerHTML = '<p class="rapports-empty">Aucun rapport rédigé pour le moment.</p>';
+      return;
+    }
+    rapportsList.innerHTML = rapports.map(r => `
+      <div class="rapport-item">
+        <div class="meta">${r.date}</div>
+        <h4>${escapeHtml(r.titre)}</h4>
+        <p>${escapeHtml(r.texte)}</p>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('btnToggleRapport').addEventListener('click', () => {
+    rapportForm.classList.toggle('open');
+  });
+
+  document.getElementById('btnSaveRapport').addEventListener('click', () => {
+    const titre = document.getElementById('inpRapportTitre').value.trim();
+    const texte = document.getElementById('inpRapportTexte').value.trim();
+    if(!titre || !texte) return;
+    rapports.unshift({ titre, texte, date: new Date().toLocaleDateString('fr-FR') });
+    document.getElementById('inpRapportTitre').value = '';
+    document.getElementById('inpRapportTexte').value = '';
+    rapportForm.classList.remove('open');
+    renderRapports();
+  });
+
+  renderRapports();
+
+  /* ---------- Bastion ---------- */
+  const structures = [
+    { nom:'Muraille de sable durci', niveau:85, note:'Renforcée chaque saison par les techniques de compression.' },
+    { nom:'Tour de guet — Est', niveau:70, note:'Surveille la route caravanière et les dunes mouvantes.' },
+    { nom:'Tour de guet — Ouest', niveau:60, note:'Zone la plus exposée au vent de sable, visibilité réduite.' },
+    { nom:'Golems de garde', niveau:75, note:'Automates de sable activés en cas d\'intrusion.' },
+    { nom:'Réserve d\'eau', niveau:90, note:'Ressource vitale du bastion, gardée en priorité absolue.' },
+    { nom:'Armurerie de marionnettes', niveau:65, note:'Entretien et réparation des unités de combat articulées.' },
+  ];
+  const bastionGrid = document.getElementById('bastionGrid');
+  bastionGrid.innerHTML = structures.map(s => `
+    <div class="card structure">
+      <h3>${s.nom} <span class="niv">${s.niveau}%</span></h3>
+      <div class="barre"><span style="width:${s.niveau}%;"></span></div>
+      <p>${s.note}</p>
+    </div>
+  `).join('');
+
+  const garnison = [
+    { poste:'Muraille — secteur nord', ninja:'Daichi Yamakaze', creneau:'Jour' },
+    { poste:'Tour de guet Est', ninja:'Hana Suzuran', creneau:'Jour' },
+    { poste:'Tour de guet Ouest', ninja:'Suzu Kazehana', creneau:'Nuit' },
+    { poste:'Réserve d\'eau', ninja:'Ren Ishikage', creneau:'Rotation' },
+  ];
+  document.getElementById('garnisonBody').innerHTML = garnison.map(g => `
+    <tr><td>${g.poste}</td><td>${g.ninja}</td><td>${g.creneau}</td></tr>
+  `).join('');
+
+  /* ---------- Guerre ---------- */
+  const phases = [
+    { titre:'Reconnaissance des frontières', texte:'Les éclaireurs cartographient les mouvements ennemis et les points d\'eau du désert avant tout engagement.' },
+    { titre:'Fortification des avant-postes', texte:'Renfort des tours de guet et pré-positionnement des réserves de sceaux explosifs.' },
+    { titre:'Manœuvre d\'encerclement', texte:'Deux escouades progressent en tenaille pour couper les lignes de ravitaillement adverses.' },
+    { titre:'Assaut coordonné', texte:'Frappe simultanée sur les points faibles identifiés, appuyée par les marionnettistes et les golems de sable.' },
+    { titre:'Consolidation du territoire', texte:'Occupation des positions prises, relève des équipes et retour au dispositif de patrouille normal.' },
+  ];
+  document.getElementById('timelineGuerre').innerHTML = phases.map((p,i) => `
+    <div class="phase" data-n="${i+1}">
+      <h3>${p.titre}</h3>
+      <p>${p.texte}</p>
+    </div>
+  `).join('');
+
+  const menaces = [
+    { nom:'Bandits des dunes mouvantes', niveau:'moyen' },
+    { nom:'Village rival aux frontières nord', niveau:'eleve' },
+    { nom:'Marchands d\'armes clandestins', niveau:'bas' },
+    { nom:'Tempêtes de sable prolongées', niveau:'moyen' },
+  ];
+  const niveauLabel = { eleve:'Élevé', moyen:'Moyen', bas:'Faible' };
+  document.getElementById('menacesGrid').innerHTML = menaces.map(m => `
+    <div class="card menace">
+      <span>${m.nom}</span>
+      <span class="niveau ${m.niveau}">${niveauLabel[m.niveau]}</span>
+    </div>
+  `).join('');
+
+  /* ---------- Patrouille ---------- */
+  const patrouille = [
+    { jour:'Lundi', zone:'Porte principale', ninja:'Kaito Amaya', creneau:'jour' },
+    { jour:'Lundi', zone:'Route caravanière', ninja:'Hana Suzuran', creneau:'nuit' },
+    { jour:'Mardi', zone:'Dunes mouvantes', ninja:'Suzu Kazehana', creneau:'jour' },
+    { jour:'Mercredi', zone:'Frontière nord', ninja:'Ren Ishikage', creneau:'nuit' },
+    { jour:'Jeudi', zone:'Porte principale', ninja:'Daichi Yamakaze', creneau:'jour' },
+    { jour:'Vendredi', zone:'Réserve d\'eau', ninja:'Hana Suzuran', creneau:'jour' },
+    { jour:'Samedi', zone:'Frontière nord', ninja:'Kaito Amaya', creneau:'nuit' },
+    { jour:'Dimanche', zone:'Dunes mouvantes', ninja:'Suzu Kazehana', creneau:'nuit' },
+  ];
+  document.getElementById('patrouilleBody').innerHTML = patrouille.map(p => `
+    <tr>
+      <td>${p.jour}</td>
+      <td>${p.zone}</td>
+      <td>${p.ninja}</td>
+      <td><span class="creneau ${p.creneau}">${p.creneau === 'jour' ? 'Jour' : 'Nuit'}</span></td>
+    </tr>
+  `).join('');
+
+})();
+</script>
+</body>
+</html>
