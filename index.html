@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SUNA — Registre stratégique du village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;900&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sable-pale:   #F1E2B8;
+    --sable-carte:  #E8D19E;
+    --dune:         #D3A24C;
+    --terre-cuite:  #B84E28;
+    --terre-cuite-2:#8F3A1E;
+    --nuit:         #23180F;
+    --nuit-2:       #34261A;
+    --crepuscule:   #3A4258;
+    --marais:       #5C7A4E;
+    --cerisier:     #D98CA3;
+    --encre:        #2A1B10;
+    --texte-clair:  #F6E9C9;
+    --ok:           #5A7D4A;
+    --alerte:       #A63A2C;
+    --radius: 4px;
+    --font-display: "Big Shoulders Display", sans-serif;
+    --font-body: "Karla", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--sable-pale);
+    color:var(--encre);
+    font-family:var(--font-body);
+    line-height:1.55;
+  }
+
+  ::selection{ background:var(--terre-cuite); color:var(--texte-clair); }
+
+  a{ color:inherit; }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0;
+    color:var(--nuit);
+  }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--terre-cuite-2);
+    margin:0 0 0.6rem 0;
+  }
+
+  .kanji-mark{
+    font-family: serif;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:rgba(35,24,15,0.94);
+    backdrop-filter: blur(6px);
+    border-bottom:3px solid var(--terre-cuite);
+  }
+  .nav-inner{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0.75rem 1.5rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+  }
+  .nav-brand{
+    display:flex;
+    align-items:baseline;
+    gap:0.5rem;
+    color:var(--texte-clair);
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    font-weight:900;
+    letter-spacing:0.06em;
+  }
+  .nav-brand .kanji-mark{
+    color:var(--dune);
+    font-size:1.3rem;
+  }
+  nav.links{
+    display:flex;
+    gap:0.25rem;
+    flex-wrap:wrap;
+  }
+  nav.links a{
+    text-decoration:none;
+    color:var(--texte-clair);
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:0.5rem 0.75rem;
+    border-radius:var(--radius);
+    border:1px solid transparent;
+    opacity:0.75;
+  }
+  nav.links a:hover, nav.links a:focus-visible{
+    opacity:1;
+    border-color:var(--dune);
+  }
+  nav.links a.active{
+    opacity:1;
+    background:var(--terre-cuite);
+    color:var(--nuit);
+    font-weight:600;
+  }
+  nav.links a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--dune);
+    outline-offset:2px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(211,162,76,0.35), transparent 55%),
+      linear-gradient(180deg, var(--nuit) 0%, var(--nuit-2) 65%, var(--sable-pale) 100%);
+    padding:5rem 1.5rem 8rem 1.5rem;
+    color:var(--texte-clair);
+  }
+  .hero-kanji{
+    position:absolute;
+    right:-3vw;
+    top:-6vw;
+    font-family:serif;
+    font-size:min(48vw, 480px);
+    color:rgba(216,166,79,0.08);
+    line-height:1;
+    user-select:none;
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .hero h1{
+    color:var(--texte-clair);
+    font-size:clamp(2.6rem, 6vw, 5rem);
+    line-height:0.98;
+    max-width:14ch;
+  }
+  .hero h1 span{ color:var(--dune); }
+  .hero p.lede{
+    max-width:52ch;
+    margin-top:1.25rem;
+    font-size:1.05rem;
+    color:#E4D3A6;
+  }
+  .hero-cta{
+    margin-top:2rem;
+    display:flex;
+    gap:0.75rem;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:0.7rem 1.2rem;
+    border-radius:var(--radius);
+    border:1px solid var(--dune);
+    cursor:pointer;
+    transition: transform 0.12s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-fill{ background:var(--terre-cuite); color:var(--nuit); border-color:var(--terre-cuite); font-weight:700; }
+  .btn-outline{ background:transparent; color:var(--texte-clair); }
+
+  .hero-stats{
+    margin-top:3rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:1px;
+    background:rgba(216,166,79,0.25);
+    max-width:640px;
+    border:1px solid rgba(216,166,79,0.25);
+  }
+  .hero-stats div{
+    background:var(--nuit);
+    padding:1rem 1.1rem;
+  }
+  .hero-stats .num{
+    font-family:var(--font-display);
+    font-size:2rem;
+    color:var(--dune);
+    font-weight:700;
+  }
+  .hero-stats .label{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:#C8B482;
+  }
+
+  .dune-divider{ display:block; margin-top:-1px; width:100%; height:auto; }
+
+  /* ---------- CARTE DU MONDE ---------- */
+  .carte-wrap{
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid rgba(0,0,0,0.12);
+    box-shadow:0 8px 24px rgba(35,24,15,0.18);
+  }
+  .carte-wrap img{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  .carte-legende{
+    display:flex;
+    gap:1.5rem;
+    flex-wrap:wrap;
+    margin-top:1.25rem;
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--terre-cuite-2);
+  }
+  .legende-item{ display:flex; align-items:center; gap:0.4rem; }
+  .legende-ico{ color:var(--terre-cuite); font-size:0.9rem; }
+
+  /* ---------- SECTIONS ---------- */
+  section.panel{
+    padding:4.5rem 1.5rem;
+    scroll-margin-top:5rem;
+  }
+  .panel-inner{
+    max-width:1180px;
+    margin:0 auto;
+  }
+  section.panel.dark{
+    background:var(--nuit);
+    color:var(--texte-clair);
+  }
+  section.panel.dark h2{ color:var(--texte-clair); }
+  section.panel.dark .eyebrow{ color:var(--dune); }
+
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:1rem;
+    flex-wrap:wrap;
+    margin-bottom:2rem;
+    border-bottom:2px solid var(--terre-cuite);
+    padding-bottom:1.25rem;
+  }
+  .section-head h2{ font-size:clamp(1.8rem,4vw,2.6rem); }
+  .section-head p{ max-width:46ch; margin:0.4rem 0 0 0; opacity:0.85; }
+
+  /* ---------- CARDS shared ---------- */
+  .card{
+    background:var(--sable-carte);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:var(--radius);
+    padding:1.5rem;
+  }
+  .dark .card{
+    background:var(--nuit-2);
+    border-color:rgba(216,166,79,0.18);
+  }
+
+  /* ---------- REGISTRE ---------- */
+  .registre-grid{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:2rem;
+    align-items:start;
+  }
+  @media (max-width:900px){ .registre-grid{ grid-template-columns:1fr; } }
+
+  table.registre{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+  }
+  table.registre thead th{
+    text-align:left;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    font-size:0.68rem;
+    color:var(--terre-cuite-2);
+    border-bottom:2px solid var(--terre-cuite);
+    padding:0.5rem 0.6rem;
+  }
+  table.registre tbody td{
+    padding:0.65rem 0.6rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+    vertical-align:middle;
+  }
+  table.registre tbody tr:hover{ background:rgba(184,78,40,0.08); }
+  .badge{
+    display:inline-block;
+    padding:0.15rem 0.5rem;
+    border-radius:99px;
+    font-size:0.68rem;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    border:1px solid currentColor;
+  }
+  .badge.genin{ color:#4C6B3C; }
+  .badge.genin_confirme{ color:#5A7D4A; }
+  .badge.chunin{ color:#8F6A1F; }
+  .badge.chunin_confirme{ color:var(--dune); }
+  .badge.tokubetsu_jonin{ color:var(--nuit); background:var(--nuit); color:var(--texte-clair); border-color:var(--nuit); }
+  .statut{ font-size:0.78rem; }
+  .statut.actif::before{ content:"● "; color:var(--ok); }
+  .statut.mission::before{ content:"● "; color:var(--dune); }
+  .statut.repos::before{ content:"● "; color:#9A8763; }
+
+  .row-del{
+    background:none;
+    border:1px solid var(--terre-cuite-2);
+    color:var(--terre-cuite-2);
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    padding:0.25rem 0.5rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .row-del:hover{ background:var(--terre-cuite-2); color:var(--texte-clair); }
+
+  form.enregistrer{
+    display:flex;
+    flex-direction:column;
+    gap:0.85rem;
+  }
+  form.enregistrer label{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--terre-cuite-2);
+    display:block;
+    margin-bottom:0.3rem;
+  }
+  form.enregistrer input, form.enregistrer select{
+    width:100%;
+    padding:0.55rem 0.6rem;
+    border:1px solid #b89a5c;
+    border-radius:var(--radius);
+    background:#fbf3dd;
+    font-family:var(--font-body);
+    font-size:0.9rem;
+  }
+  form.enregistrer button{
+    margin-top:0.3rem;
+    background:var(--terre-cuite);
+    color:var(--nuit);
+    border:none;
+    font-weight:700;
+    font-family:var(--font-mono);
+    text-transform:uppercase;
+    font-size:0.78rem;
+    letter-spacing:0.05em;
+    padding:0.7rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  form.enregistrer button:hover{ background:var(--terre-cuite-2); }
+
+  .stat-mini-row{
+    display:flex;
+    gap:0.6rem;
+    margin-bottom:1.25rem;
+    flex-wrap:wrap;
+  }
+  .stat-mini{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    background:rgba(184,78,40,0.1);
+    border:1px solid rgba(184,78,40,0.3);
+    padding:0.3rem 0.6rem;
+    border-radius:99px;
+  }
+  .stat-mini b{ color:var(--terre-cuite-2); }
+
+  /* ---------- CAPTURE DU DRAPEAU ---------- */
+  .ctf-intro{
+    max-width:70ch;
+    opacity:0.85;
+    margin-bottom:2rem;
+  }
+
+  .pays-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1.5rem;
+  }
+
+  .pays-card{
+    border-radius:var(--radius);
+    padding:1.5rem;
+    border-top:4px solid var(--accent);
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+  }
+  .pays-card.secheresse{ --accent: var(--terre-cuite); }
+  .pays-card.marais{ --accent: var(--marais); }
+  .pays-card.cerisiers{ --accent: var(--cerisier); }
+
+  .pays-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:0.5rem;
+  }
+  .pays-head h3{
+    color:var(--texte-clair);
+    font-size:1.25rem;
+  }
+  .pays-count{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--accent);
+    white-space:nowrap;
+  }
+
+  .pays-jauge{
+    height:6px;
+    background:rgba(255,255,255,0.08);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .pays-jauge > span{
+    display:block;
+    height:100%;
+    background:var(--accent);
+  }
+
+  .drapeaux-liste{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+  }
+  .drapeau-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.75rem;
+    padding:0.55rem 0.7rem;
+    border-radius:var(--radius);
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .drapeau-item.capture{
+    background:rgba(var(--accent-rgb,216,166,79),0.14);
+    border-color:var(--accent);
+  }
+  .drapeau-nom{
+    display:flex;
+    align-items:center;
+    gap:0.55rem;
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+  }
+  .drapeau-icone{ color:var(--accent); font-size:0.9rem; }
+  .drapeau-statut{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:#9A8763;
+  }
+  .drapeau-item.capture .drapeau-statut{ color:var(--accent); }
+
+  .drapeau-btn{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--texte-clair);
+    padding:0.3rem 0.6rem;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  .drapeau-btn:hover{ background:var(--accent); color:var(--nuit); }
+
+  .ctf-total{
+    margin-top:2rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:1rem;
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    color:var(--texte-clair);
+    border-top:1px solid rgba(216,166,79,0.2);
+    padding-top:1.25rem;
+  }
+  .ctf-total b{ color:var(--dune); font-size:1.1rem; }
+  .score-reset{
+    background:none;
+    border:none;
+    color:#9A8763;
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  ul.regles{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:0.75rem;
+  }
+  ul.regles li{
+    padding-left:1.6rem;
+    position:relative;
+    font-size:0.92rem;
+  }
+  ul.regles li::before{
+    content:"風";
+    position:absolute;
+    left:0;
+    top:0;
+    color:var(--dune);
+    font-family:serif;
+    font-size:0.85rem;
+  }
+
+  /* ---------- BASTION ---------- */
+  .bastion-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:1.25rem;
+  }
+  .structure h3{
+    font-size:1.15rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .structure .niv{
+    font-family:var(--font-mono);
+    font-size:0.7rem;
+    color:var(--terre-cuite-2);
+  }
+  .barre{
+    height:8px;
+    background:rgba(0,0,0,0.1);
+    border-radius:99px;
+    margin-top:0.7rem;
+    overflow:hidden;
+  }
+  .barre > span{
+    display:block;
+    height:100%;
+    background:linear-gradient(90deg, var(--dune), var(--terre-cuite));
+  }
+  .structure p{
+    font-size:0.85rem;
+    margin:0.7rem 0 0 0;
+    opacity:0.85;
+  }
+
+  .garnison-table{
+    margin-top:2.5rem;
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+  }
+  .garnison-table th{
+    text-align:left;
+    text-transform:uppercase;
+    font-size:0.68rem;
+    letter-spacing:0.06em;
+    color:var(--terre-cuite-2);
+    border-bottom:2px solid var(--terre-cuite);
+    padding:0.5rem 0.6rem;
+  }
+  .garnison-table td{
+    padding:0.6rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+  }
+
+  /* ---------- GUERRE ---------- */
+  .timeline{
+    position:relative;
+    margin-top:1rem;
+    padding-left:2.5rem;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:0.85rem;
+    top:0.3rem;
+    bottom:0.3rem;
+    width:2px;
+    background:linear-gradient(180deg, var(--dune), var(--terre-cuite));
+  }
+  .phase{
+    position:relative;
+    padding-bottom:2rem;
+  }
+  .phase:last-child{ padding-bottom:0; }
+  .phase::before{
+    content:attr(data-n);
+    position:absolute;
+    left:-2.5rem;
+    top:0;
+    width:1.7rem;
+    height:1.7rem;
+    border-radius:50%;
+    background:var(--nuit);
+    color:var(--dune);
+    border:2px solid var(--dune);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    font-weight:700;
+  }
+  .phase h3{ color:var(--texte-clair); font-size:1.1rem; }
+  .phase p{ margin:0.4rem 0 0 0; opacity:0.85; font-size:0.9rem; max-width:60ch; }
+
+  .menaces{
+    margin-top:2.5rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:1rem;
+  }
+  .menace{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:0.75rem;
+  }
+  .niveau{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    text-transform:uppercase;
+    padding:0.2rem 0.55rem;
+    border-radius:99px;
+    white-space:nowrap;
+  }
+  .niveau.eleve{ background:rgba(166,58,44,0.25); color:#E38C7B; border:1px solid var(--alerte); }
+  .niveau.moyen{ background:rgba(211,162,76,0.2); color:var(--dune); border:1px solid var(--dune); }
+  .niveau.bas{ background:rgba(90,125,74,0.2); color:#9DBF89; border:1px solid var(--ok); }
+
+  /* ---------- PATROUILLE ---------- */
+  .patrouille-table-wrap{ overflow-x:auto; }
+  table.patrouille{
+    width:100%;
+    min-width:640px;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:0.82rem;
+  }
+  table.patrouille th{
+    background:var(--nuit);
+    color:var(--texte-clair);
+    text-align:left;
+    padding:0.6rem 0.7rem;
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  table.patrouille td{
+    padding:0.6rem 0.7rem;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+  }
+  table.patrouille tbody tr:nth-child(even){ background:rgba(184,78,40,0.06); }
+  .creneau{
+    font-size:0.68rem;
+    padding:0.15rem 0.5rem;
+    border-radius:99px;
+    border:1px solid currentColor;
+  }
+  .creneau.jour{ color:#8F6A1F; }
+  .creneau.nuit{ color:var(--crepuscule); }
+
+  footer{
+    background:var(--nuit);
+    color:#9A8763;
+    text-align:center;
+    padding:2.5rem 1.5rem;
+    font-family:var(--font-mono);
+    font-size:0.75rem;
+    letter-spacing:0.04em;
+  }
+  footer .kanji-mark{ color:var(--dune); font-size:1.1rem; display:block; margin-bottom:0.5rem; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand"><span class="kanji-mark">砂</span> SUNA STRATEGIE</div>
+    <nav class="links" id="navLinks">
+      <a href="#accueil">Accueil</a>
+      <a href="#carte">Carte du monde</a>
+      <a href="#registre">Registre</a>
+      <a href="#ctf">Capture du drapeau</a>
+      <a href="#bastion">Bastion</a>
+      <a href="#guerre">Guerre</a>
+      <a href="#patrouille">Patrouille</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="accueil">
+  <div class="hero-kanji kanji-mark">砂</div>
+  <div class="hero-inner">
+    <p class="eyebrow">Dossier de commandement — village caché du sable</p>
+    <h1>La stratégie de <span>Suna</span> se pilote ici.</h1>
+    <p class="lede">Un tableau de bord unique pour tenir le registre des ninjas, organiser les captures de drapeau, superviser le bastion, planifier la guerre et couvrir les patrouilles du désert.</p>
+    <div class="hero-cta">
+      <a href="#registre" class="btn btn-fill">Ouvrir le registre</a>
+      <a href="#ctf" class="btn btn-outline">Voir la capture du drapeau</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="num" id="statTotal">5</div><div class="label">Ninjas enregistrés</div></div>
+      <div><div class="num">5</div><div class="label">Rangs actifs</div></div>
+      <div><div class="num">6</div><div class="label">Structures du bastion</div></div>
+      <div><div class="num">5</div><div class="label">Phases de guerre</div></div>
+    </div>
+  </div>
+  <svg class="dune-divider" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 C240,90 480,0 720,30 C960,60 1200,10 1440,50 L1440,90 L0,90 Z" fill="#F1E2B8"></path>
+  </svg>
+</section>
+
+<!-- ============ CARTE DU MONDE ============ -->
+<section class="panel" id="carte">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Territoires</p>
+        <h2>Carte du monde shinobi</h2>
+        <p>Sunagakure au Pays du Vent, les trois pays neutres à surveiller, et les grandes puissances alentour.</p>
+      </div>
+    </div>
+
+    <div class="carte-wrap">
+      <img src="carte-monde-shinobi.png" alt="Carte du monde shinobi : Pays du Vent avec Sunagakure, Pays de la Pluie, Pays des Marais, Pays du Feu, Pays de la Sécheresse, Pays des Cerisiers (Yozakura), Pays du Fer et Pays des Plages, avec bastions, drapeaux et frontières indiqués." loading="lazy">
+    </div>
+
+    <div class="carte-legende">
+      <div class="legende-item"><span class="legende-ico">Ⓐ</span> Bastion</div>
+      <div class="legende-item"><span class="legende-ico">⚑</span> Drapeau</div>
+      <div class="legende-item"><span class="legende-ico">╫╫╫</span> Frontière</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REGISTRE ============ -->
+<section class="panel" id="registre">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 01</p>
+        <h2>Registre des ninjas</h2>
+        <p>Chaque shinobi actif, en mission ou au repos, consigné avec son rang et sa spécialité.</p>
+      </div>
+    </div>
+
+    <div class="registre-grid">
+      <div>
+        <div class="stat-mini-row" id="statMiniRow"></div>
+        <table class="registre">
+          <thead>
+            <tr><th>Nom</th><th>Rang</th><th>Spécialité</th><th>Statut</th><th></th></tr>
+          </thead>
+          <tbody id="registreBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:1.1rem; margin-bottom:1rem;">Enregistrer un ninja</h3>
+        <form class="enregistrer" id="formNinja">
+          <div>
+            <label for="inpNom">Nom</label>
+            <input type="text" id="inpNom" placeholder="Ex. Aoi Suzumebachi" required>
+          </div>
+          <div>
+            <label for="inpRang">Rang</label>
+            <select id="inpRang">
+              <option value="genin">Genin</option>
+              <option value="genin_confirme">Genin Confirmé</option>
+              <option value="chunin">Chūnin</option>
+              <option value="chunin_confirme">Chūnin Confirmé</option>
+              <option value="tokubetsu_jonin">Tokubetsu Jōnin</option>
+            </select>
+          </div>
+          <div>
+            <label for="inpSpecialite">Spécialité</label>
+            <input type="text" id="inpSpecialite" placeholder="Ex. Manipulation du sable" required>
+          </div>
+          <div>
+            <label for="inpStatut">Statut</label>
+            <select id="inpStatut">
+              <option value="actif">Actif</option>
+              <option value="mission">En mission</option>
+              <option value="repos">Au repos</option>
+            </select>
+          </div>
+          <button type="submit">Ajouter au registre</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPTURE DU DRAPEAU ============ -->
+<section class="panel dark" id="ctf">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 02</p>
+        <h2>Capture du drapeau</h2>
+        <p>Trois pays frontaliers, trois drapeaux à tenir chacun. Chaque case suit l'état d'un étendard.</p>
+      </div>
+    </div>
+
+    <ul class="regles ctf-intro">
+      <li>Chaque pays défend trois drapeaux répartis sur son territoire, numérotés 1 à 3.</li>
+      <li>Un drapeau capturé bascule sur « Capturé » ; il peut être repris par le camp adverse à tout moment.</li>
+      <li>Un pays tombe lorsque ses trois drapeaux sont capturés au même moment.</li>
+      <li>Les techniques de dissimulation sont autorisées, les pièges explosifs sont interdits en zone de capture.</li>
+    </ul>
+
+    <div class="pays-grid" id="paysGrid"></div>
+
+    <div class="ctf-total">
+      <div>Drapeaux capturés au total : <b id="ctfTotal">0</b> / 9</div>
+      <button class="score-reset" id="ctfReset">Réinitialiser tous les drapeaux</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BASTION ============ -->
+<section class="panel" id="bastion">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 03</p>
+        <h2>Bastion</h2>
+        <p>L'état des fortifications du village et la garnison affectée à chacune.</p>
+      </div>
+    </div>
+
+    <div class="bastion-grid" id="bastionGrid"></div>
+
+    <table class="garnison-table">
+      <thead>
+        <tr><th>Poste</th><th>Ninja de garde</th><th>Créneau</th></tr>
+      </thead>
+      <tbody id="garnisonBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ GUERRE ============ -->
+<section class="panel dark" id="guerre">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 04</p>
+        <h2>Guerre</h2>
+        <p>Le déroulé d'une campagne, phase par phase, et les menaces surveillées à la frontière.</p>
+      </div>
+    </div>
+
+    <div class="timeline" id="timelineGuerre"></div>
+
+    <div class="menaces" id="menacesGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PATROUILLE ============ -->
+<section class="panel" id="patrouille">
+  <div class="panel-inner">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Dossier 05</p>
+        <h2>Patrouille</h2>
+        <p>Le tour de garde hebdomadaire des abords du village, zone par zone.</p>
+      </div>
+    </div>
+
+    <div class="patrouille-table-wrap">
+      <table class="patrouille">
+        <thead>
+          <tr><th>Jour</th><th>Zone</th><th>Ninja assigné</th><th>Créneau</th></tr>
+        </thead>
+        <tbody id="patrouilleBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="kanji-mark">砂</span>
+  Village caché du Sable — dossier de stratégie interne
+</footer>
+
+<script>
+(function(){
+
+  /* ---------- Nav active state ---------- */
+  const navLinks = Array.from(document.querySelectorAll('#navLinks a'));
+  const sections = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const id = '#' + entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  sections.forEach(s => s && io.observe(s));
+
+  /* ---------- Registre des ninjas ---------- */
+  const rangLabels = { genin:'Genin', genin_confirme:'Genin Confirmé', chunin:'Chūnin', chunin_confirme:'Chūnin Confirmé', tokubetsu_jonin:'Tokubetsu Jōnin' };
+  let ninjas = [
+    { nom:'Kaito Amaya', rang:'tokubetsu_jonin', specialite:'Marionnettiste de combat', statut:'actif' },
+    { nom:'Suzu Kazehana', rang:'chunin', specialite:'Maîtrise du vent', statut:'actif' },
+    { nom:'Ren Ishikage', rang:'chunin_confirme', specialite:'Infiltration et sceaux', statut:'mission' },
+    { nom:'Hana Suzuran', rang:'genin', specialite:'Éclaireuse du désert', statut:'actif' },
+    { nom:'Daichi Yamakaze', rang:'genin_confirme', specialite:'Golems de sable', statut:'repos' },
+  ];
+
+  const registreBody = document.getElementById('registreBody');
+  const statMiniRow = document.getElementById('statMiniRow');
+  const statTotal = document.getElementById('statTotal');
+
+  function renderRegistre(){
+    registreBody.innerHTML = '';
+    ninjas.forEach((n, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(n.nom)}</td>
+        <td><span class="badge ${n.rang}">${rangLabels[n.rang]}</span></td>
+        <td>${escapeHtml(n.specialite)}</td>
+        <td><span class="statut ${n.statut}">${statutLabel(n.statut)}</span></td>
+        <td><button class="row-del" data-i="${i}">Retirer</button></td>
+      `;
+      registreBody.appendChild(tr);
+    });
+
+    statTotal.textContent = ninjas.length;
+
+    const counts = { genin:0, genin_confirme:0, chunin:0, chunin_confirme:0, tokubetsu_jonin:0 };
+    ninjas.forEach(n => counts[n.rang]++);
+    statMiniRow.innerHTML = Object.keys(counts).map(r =>
+      `<span class="stat-mini"><b>${counts[r]}</b> ${rangLabels[r]}</span>`
+    ).join('');
+  }
+
+  function statutLabel(s){
+    return s === 'actif' ? 'Actif' : s === 'mission' ? 'En mission' : 'Au repos';
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  registreBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.row-del');
+    if(!btn) return;
+    const i = Number(btn.dataset.i);
+    ninjas.splice(i, 1);
+    renderRegistre();
+  });
+
+  document.getElementById('formNinja').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nom = document.getElementById('inpNom').value.trim();
+    const rang = document.getElementById('inpRang').value;
+    const specialite = document.getElementById('inpSpecialite').value.trim();
+    const statut = document.getElementById('inpStatut').value;
+    if(!nom || !specialite) return;
+    ninjas.push({ nom, rang, specialite, statut });
+    renderRegistre();
+    e.target.reset();
+    document.getElementById('inpNom').focus();
+  });
+
+  renderRegistre();
+
+  /* ---------- Capture du drapeau : pays et drapeaux ---------- */
+  const pays = [
+    { id:'secheresse', nom:'Pays de la Sécheresse', classe:'secheresse',
+      drapeaux:[ { nom:'Drapeau 1', capture:false }, { nom:'Drapeau 2', capture:true }, { nom:'Drapeau 3', capture:false } ] },
+    { id:'marais', nom:'Pays des Marais', classe:'marais',
+      drapeaux:[ { nom:'Drapeau 1', capture:false }, { nom:'Drapeau 2', capture:false }, { nom:'Drapeau 3', capture:false } ] },
+    { id:'cerisiers', nom:'Pays des Cerisiers', classe:'cerisiers',
+      drapeaux:[ { nom:'Drapeau 1', capture:true }, { nom:'Drapeau 2', capture:false }, { nom:'Drapeau 3', capture:true } ] },
+  ];
+
+  const paysGrid = document.getElementById('paysGrid');
+  const ctfTotal = document.getElementById('ctfTotal');
+
+  function renderPays(){
+    paysGrid.innerHTML = pays.map(p => {
+      const nbCaptures = p.drapeaux.filter(d => d.capture).length;
+      const pct = Math.round((nbCaptures / p.drapeaux.length) * 100);
+      return `
+        <div class="pays-card ${p.classe}">
+          <div class="pays-head">
+            <h3>${p.nom}</h3>
+            <span class="pays-count">${nbCaptures}/${p.drapeaux.length} capturés</span>
+          </div>
+          <div class="pays-jauge"><span style="width:${pct}%;"></span></div>
+          <ul class="drapeaux-liste">
+            ${p.drapeaux.map((d, i) => `
+              <li class="drapeau-item ${d.capture ? 'capture' : ''}">
+                <span class="drapeau-nom"><span class="drapeau-icone">⚑</span> ${d.nom}</span>
+                <span style="display:flex; align-items:center; gap:0.6rem;">
+                  <span class="drapeau-statut">${d.capture ? 'Capturé' : 'En place'}</span>
+                  <button class="drapeau-btn" data-pays="${p.id}" data-drapeau="${i}">${d.capture ? 'Reprendre' : 'Capturer'}</button>
+                </span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+    }).join('');
+
+    const total = pays.reduce((sum, p) => sum + p.drapeaux.filter(d => d.capture).length, 0);
+    ctfTotal.textContent = total;
+  }
+
+  paysGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.drapeau-btn');
+    if(!btn) return;
+    const p = pays.find(p => p.id === btn.dataset.pays);
+    const d = p.drapeaux[Number(btn.dataset.drapeau)];
+    d.capture = !d.capture;
+    renderPays();
+  });
+
+  document.getElementById('ctfReset').addEventListener('click', () => {
+    pays.forEach(p => p.drapeaux.forEach(d => d.capture = false));
+    renderPays();
+  });
+
+  renderPays();
+
+  /* ---------- Bastion ---------- */
+  const structures = [
+    { nom:'Muraille de sable durci', niveau:85, note:'Renforcée chaque saison par les techniques de compression.' },
+    { nom:'Tour de guet — Est', niveau:70, note:'Surveille la route caravanière et les dunes mouvantes.' },
+    { nom:'Tour de guet — Ouest', niveau:60, note:'Zone la plus exposée au vent de sable, visibilité réduite.' },
+    { nom:'Golems de garde', niveau:75, note:'Automates de sable activés en cas d\\'intrusion.' },
+    { nom:'Réserve d\\'eau', niveau:90, note:'Ressource vitale du bastion, gardée en priorité absolue.' },
+    { nom:'Armurerie de marionnettes', niveau:65, note:'Entretien et réparation des unités de combat articulées.' },
+  ];
+  const bastionGrid = document.getElementById('bastionGrid');
+  bastionGrid.innerHTML = structures.map(s => `
+    <div class="card structure">
+      <h3>${s.nom} <span class="niv">${s.niveau}%</span></h3>
+      <div class="barre"><span style="width:${s.niveau}%;"></span></div>
+      <p>${s.note}</p>
+    </div>
+  `).join('');
+
+  const garnison = [
+    { poste:'Muraille — secteur nord', ninja:'Daichi Yamakaze', creneau:'Jour' },
+    { poste:'Tour de guet Est', ninja:'Hana Suzuran', creneau:'Jour' },
+    { poste:'Tour de guet Ouest', ninja:'Suzu Kazehana', creneau:'Nuit' },
+    { poste:'Réserve d\\'eau', ninja:'Ren Ishikage', creneau:'Rotation' },
+  ];
+  document.getElementById('garnisonBody').innerHTML = garnison.map(g => `
+    <tr><td>${g.poste}</td><td>${g.ninja}</td><td>${g.creneau}</td></tr>
+  `).join('');
+
+  /* ---------- Guerre ---------- */
+  const phases = [
+    { titre:'Reconnaissance des frontières', texte:'Les éclaireurs cartographient les mouvements ennemis et les points d\\'eau du désert avant tout engagement.' },
+    { titre:'Fortification des avant-postes', texte:'Renfort des tours de guet et pré-positionnement des réserves de sceaux explosifs.' },
+    { titre:'Manœuvre d\\'encerclement', texte:'Deux escouades progressent en tenaille pour couper les lignes de ravitaillement adverses.' },
+    { titre:'Assaut coordonné', texte:'Frappe simultanée sur les points faibles identifiés, appuyée par les marionnettistes et les golems de sable.' },
+    { titre:'Consolidation du territoire', texte:'Occupation des positions prises, relève des équipes et retour au dispositif de patrouille normal.' },
+  ];
+  document.getElementById('timelineGuerre').innerHTML = phases.map((p,i) => `
+    <div class="phase" data-n="${i+1}">
+      <h3>${p.titre}</h3>
+      <p>${p.texte}</p>
+    </div>
+  `).join('');
+
+  const menaces = [
+    { nom:'Bandits des dunes mouvantes', niveau:'moyen' },
+    { nom:'Village rival aux frontières nord', niveau:'eleve' },
+    { nom:'Marchands d\\'armes clandestins', niveau:'bas' },
+    { nom:'Tempêtes de sable prolongées', niveau:'moyen' },
+  ];
+  const niveauLabel = { eleve:'Élevé', moyen:'Moyen', bas:'Faible' };
+  document.getElementById('menacesGrid').innerHTML = menaces.map(m => `
+    <div class="card menace">
+      <span>${m.nom}</span>
+      <span class="niveau ${m.niveau}">${niveauLabel[m.niveau]}</span>
+    </div>
+  `).join('');
+
+  /* ---------- Patrouille ---------- */
+  const patrouille = [
+    { jour:'Lundi', zone:'Porte principale', ninja:'Kaito Amaya', creneau:'jour' },
+    { jour:'Lundi', zone:'Route caravanière', ninja:'Hana Suzuran', creneau:'nuit' },
+    { jour:'Mardi', zone:'Dunes mouvantes', ninja:'Suzu Kazehana', creneau:'jour' },
+    { jour:'Mercredi', zone:'Frontière nord', ninja:'Ren Ishikage', creneau:'nuit' },
+    { jour:'Jeudi', zone:'Porte principale', ninja:'Daichi Yamakaze', creneau:'jour' },
+    { jour:'Vendredi', zone:'Réserve d\\'eau', ninja:'Hana Suzuran', creneau:'jour' },
+    { jour:'Samedi', zone:'Frontière nord', ninja:'Kaito Amaya', creneau:'nuit' },
+    { jour:'Dimanche', zone:'Dunes mouvantes', ninja:'Suzu Kazehana', creneau:'nuit' },
+  ];
+  document.getElementById('patrouilleBody').innerHTML = patrouille.map(p => `
+    <tr>
+      <td>${p.jour}</td>
+      <td>${p.zone}</td>
+      <td>${p.ninja}</td>
+      <td><span class="creneau ${p.creneau}">${p.creneau === 'jour' ? 'Jour' : 'Nuit'}</span></td>
+    </tr>
+  `).join('');
+
+})();
+</script>
+</body>
+</html>
